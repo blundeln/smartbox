@@ -1,0 +1,88 @@
+[global]
+workgroup = WORKGROUP 
+server string = Smartbox
+
+passdb backend = tdbsam
+security = user
+username map = /etc/samba/smbusers
+name resolve order = wins bcast hosts
+domain logons = yes
+preferred master = yes
+wins support = yes
+
+# Set CUPS for printing
+printcap name = CUPS
+printing = CUPS
+
+# Default logon
+logon drive = H:
+logon script = %U.bat
+logon path = \\%N\profile\%U
+
+# Useradd scripts
+add user script = /usr/sbin/useradd -m %u
+delete user script = /usr/sbin/userdel -r %u
+add group script = /usr/sbin/groupadd %g
+delete group script = /usr/sbin/groupdel %g
+add user to group script = /usr/sbin/usermod -G %g %u
+add machine script = /usr/sbin/useradd -s /bin/false/ -d /var/lib/nobody %u
+set primary group script = /usr/sbin/usermod -g %g %u
+idmap uid = 15000-20000
+idmap gid = 15000-20000
+
+# sync smb passwords with linux passwords
+passwd program = /usr/bin/passwd %u
+passwd chat = *password* %n\n *password* %n\n *success*
+passwd chat debug = yes
+unix password sync = no
+
+# set the loglevel
+log level = 3
+
+# Hide these
+hide files = /DESKTOP.INI/desktop.ini/Desktop.ini/
+
+[printers]
+comment = Printers
+path = /var/spool/samba
+printable = yes
+guest ok = yes
+browsable = no
+
+[netlogon]
+root preexec = SMARTBOX_SCRIPT GEN_LOGON_SCRIPT %U
+comment = Network Logon Service
+path = NETLOGON_PATH
+admin users = Administrator
+users = %U
+read only = no
+
+[homes]
+path = HOMES_PATH
+comment = %S's home
+# Allow only the owner of the home share to login and access it.
+users = %S
+# Allow the user of this share to modify and write.
+read only = no
+# Control whether or not this share should be visible in lists.
+browsable = no
+
+# Create a share for reading and writing user profiles.
+[profile]
+comment = User profiles
+path = PROFILES_PATH
+users = %U
+create mode = 0600
+directory mode = 0700
+writable = yes
+browsable = no
+
+
+[backups]
+comment = Hourly, daily, weekly, and monthly backups. 
+path = /.rsnapshot/
+# Allow only the owner of the home share to login and access it.
+users = @users
+# Make this share read-only.
+read only = yes
+browsable = yes

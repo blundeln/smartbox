@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load tags %}
+
+
+{% block body %}
+
+{% startSkinBox "pageskin" %}
+<table id="page">
+
+<tr><td colspan="3">
+<div id="header">
+<div id="version">{%version%}</div>
+{% block header %}{% endblock %}
+</div>
+</td></tr>
+
+<tr><td colspan="3">
+{% warnings %}
+</td></tr>
+
+<div id="header">
+<tr>
+<td id="leftbar">
+{% block leftbar %}
+
+{% startSkinBox "boxskin" %}
+{% menuBlock %}
+{% stopSkinBox "boxskin" %}
+
+
+{% startSkinBox "boxskin" %}
+{% statusBlock %}
+{% stopSkinBox "boxskin" %}
+
+{% endblock %}
+</td>
+
+<td>
+<div id="content">
+{% startSkinBox "contentskin" %}
+
+  {% if messages %}
+    <ul class="message">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+{% stopSkinBox "contentskin" %}
+</div>
+</td>
+
+<td id="rightbar">
+{% block rightbar %}{% endblock %}
+</td>
+</tr>
+
+<tr>
+<td id="footer" colspan="3">
+{% block footer %}
+SmartBOX {% version %} Copyright &#169; Nick Blundell (<a href="http://www.nickblundell.org.uk">www.nickblundell.org.uk</a>) 1999-2007<br/>
+Supported by <a href="http://www.illuminateict.org.uk">Illuminate ICT</a>
+{% endblock %}
+</td>
+</tr>
+
+</table>
+{% stopSkinBox "pageskin" %}
+
+{% endblock %}

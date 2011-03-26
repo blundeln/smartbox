@@ -1,0 +1,2 @@
+# Smartbox: Copy the installation script to the new system.
+d-i preseed/late_command string cp -a /cdrom/preseed/install.sh /target/root; sed -i 's_exit 0_sh /root/install.sh_' /target/etc/rc.local;

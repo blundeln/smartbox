@@ -1,0 +1,231 @@
+/*
+ * style (style.css)
+ * -----------------
+ *
+ * Description:
+ *	Text styles, etc.
+ *
+ * Author       : Nick Blundell
+ * Organisation : www.nickblundell.org.uk
+ * Version Info : $Id$
+ */
+
+body {
+	color: #000000;
+	font: 78% sans-serif;
+	color: #333;
+}
+
+h1, h2, h3, h4 {
+	color: #646464;
+	xfont: 100% sans-serif;
+}
+
+h1 {font-size:145%;}
+h2 {font-size:135%;}
+h3 {font-size:128%;}
+h4 {font-size:120%;}
+h5 {font-size:110%;}
+
+h1.title {font-size: 170%;}
+h1.subtitle {font-size: 160%;}
+
+a, a:link, a:visited {
+	color: #0000ff;
+	text-decoration: none; /* No underline or anything. */
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+	color: #646464;
+}
+
+.space-text {
+	font-size: 6px;
+}
+
+a:hover {
+	color: #ff0000;
+	text-decoration: none; /* No underline or anything. */
+}
+
+table {
+	border: 0px solid black;
+}
+
+tr, th {
+	text-align: left;
+}
+
+tr:hover {
+	/*background-color: #aaaaaa;*/
+}
+
+tr.tableheader, tr.tableheader:hover {
+	background-color: #d6ecff;
+}
+
+form.styled textarea, form.styled input, form.styled select {
+	background-color: #d6ecff;
+	border: 1px solid #646464;
+}
+
+input.button {
+	background-color: #aaaaaa;
+}
+
+input.button:hover {
+	background-color: #55de1b;
+}
+
+#footer {
+	text-align: center;
+	font: 70% sans-serif;
+}
+
+#contentfooter, .adminoptions {
+	color: #646464;
+	text-align: right;
+	font: 70% sans-serif;
+}
+
+.pagination {
+  text-align:center;
+	font-size: 80%;
+}
+
+li {
+	xpadding:0px;
+}
+
+li li {
+	xmargin-left:-60px;
+}
+
+.centre, .center {
+	text-align: center;
+}
+
+pre.literal-block {
+	background-color: #fffc93;
+	border: 1px solid #646464;
+	padding: 1px;
+}
+
+img {
+	border: 0px;
+}
+
+#pageLogin
+{
+	font-size: 10px;
+	font-family: verdana;
+	text-align: right;
+}
+
+h1, h2, h3, h4 {
+	color: #646464;
+	xfont: 70% sans-serif;
+}
+
+table.recordlist {
+	border: 1px solid #888;
+	font-size:0.75em;
+	border-collapse:collapse;
+	margin: 4px 0px 4px 0px;
+}
+
+table.recordlist a {color:black;display:block;}
+
+.recordlist td, .recordlist th {
+	padding:2px;
+}
+
+.recordlist td {
+	border-left: 1px solid #888;
+	border-right: 1px solid #888;
+	border-top: 1px solid #eee;
+	text-align:left;
+}
+
+.recordlist tr {
+	background-color: #fff;
+}
+
+.recordlist th {
+	border-bottom: 1px solid #888;
+	border-left: 1px solid #888;
+	background-color:#eee;
+	text-align:left;
+}
+
+.recordlist tr:hover, .recordlist th:hover {
+	background-color: #eea;
+}
+
+/* Blocks */
+
+
+table.icons td {text-align:center; padding:0;margin:0;}
+table.icons, table.icons tr {padding:0;margin:0;}
+table.icons {width:100%;}
+
+#mainmenu ul {list-style-type:none; padding:0;margin:0;}
+#mainmenu ul li {color:#0000ff; font-size:110%;margin-bottom:3px; font-weight:bold;}
+div.block h1 {color:#000080; text-align:center; margin:0 0 12px 0; font-size:1.6em;}
+div.block hr {border:1px solid #8c8c8c; height:5px; background-color:#e8e8e8;}
+div.block fieldset {border: 1px solid #ccc; margin:0;}
+fieldset legend {color: black;}
+
+h1 {color:#008000; font-weight:bold; font-size:2em;}
+
+div.shareheader {text-align:center;}
+td.user {width:200px;}
+td.user img {margin-right:5px;}
+td.user div {float:left;}
+td.user span.name, .backup-peers span.name {font-size:140%;}
+div.sharecheckbox {text-align:center;}
+
+
+div.progressbar {
+background-color:#e6e6e6;
+border:1px solid black;
+padding:0px;
+margin:3px;
+}
+
+div.progressbar .bar {
+  position:relative;
+  top:0px;
+  left:0px;
+  background-color:#0e7cc1;
+  padding-top:0px;
+  padding:0px;
+}
+
+div.progressbar .text {
+  position:absolute;
+  top:0px;
+  left:0px;
+  color:#000000;
+  text-align:center;
+  font:bold;
+}
+
+table.raidstatus td {text-align:center;}
+
+.inline {float:left;}
+.clear-left {clear:left;}
+
+
+.form-error {
+	background-color: #ff5555;
+	border: 1px solid #646464;
+	padding: 3px;
+  margin-top:3px;
+}
+
+.little-help {font-size:0.9em; margin:3px;}
+.little-help h1 {font-size:1em;}
+div.little-help {border:1px solid #a7a7a7; background-color:#efefef;}
+
+.smalltext {font-size:0.8em}

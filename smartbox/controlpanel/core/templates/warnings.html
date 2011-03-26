@@ -1,0 +1,11 @@
+{% load thirdpartytags %}
+{% expr ["ERRORS","WARNINGS"] as warningTypes %}
+{% for warningType in warningTypes %}
+  {% expr statusMessages[warningType] as messages %}
+  {% for message in messages %}
+    <div class="warning clear">
+      <img src="/media/images/warning.png"/>
+      {{message.message}} [{{message.timestamp}}]
+    </div>
+  {% endfor %}
+{% endfor %}

@@ -1,0 +1,7 @@
+[SHARE]
+path = PATH
+# Allow the user of this share to modify and write.
+read only = no
+browsable = yes
+create mode = 0770
+directory mode = 0770

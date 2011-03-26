@@ -1,0 +1,90 @@
+{% load tags %}
+{% load thirdpartytags %}
+{% extends "main.html" %}
+
+{% block title %}Advanced Settings{% endblock %}
+
+{% block content %}
+
+<h1>Advanced settings</h1>
+
+Note: do not alter these settings unless you are sure of how they affect your smartbox.
+
+{% if form.has_errors %}
+<div class="form-error"><h2>Please correct the following error{{ form.error_dict|pluralize }}:</div></h2>
+{% endif %}
+
+<form class="styled" name="settings-form" method="POST">
+<fieldset class="collapsible{% if not form.has_errors %} collapsed{% endif %}"><legend>Administrator's Password</legend>
+{% fieldrow form.password1 "New password" %}
+{% fieldrow form.password2 "Re-type new password" %}
+</fieldset>
+
+<fieldset class="collapsible{% if not form.has_errors %} collapsed{% endif %}"><legend>Network</legend>
+{% fieldrow form.hostname "Hostname" 1 %}
+{% fieldrow form.domain "Domain" %}
+{% fieldrow form.networkconfig "Mode" %}
+{% fieldrow form.address "IP Address" %}
+{% fieldrow form.netmask "Network Mask" %}
+{% fieldrow form.gateway "Default Gateway" %}
+</fieldset>
+
+<fieldset class="collapsible{% if not form.has_errors %} collapsed{% endif %}"><legend>Remote Backup</legend>
+  <fieldset class="collapsible"><legend>Remote Backup Peer</legend>
+    <div class="little-help">
+      <p>These settings allow this smartbox to backup data remotely onto another smartbox or to an ssh account.
+      Typically backup sessions will be set to run for a maximum duration of time at night-time,
+      then gradually, over a few days/weeks (depending on data quantity and network speed),
+      the remote data will become fully synchronised with your smartbox.  This Smartbox will try to connect
+      to the remote server on ports <b>22</b> (ssh) or <b>{{smartboxPort}}</b>, so make sure port forwarding is
+      configured at the destination if neccessary.</p>
+    </div>
+    <img src="/media/images/sbremote.png"/>
+    {% fieldrow form.peerHost "Host" %}
+    {% fieldrow form.peerUsername "Username" %}
+    {% fieldrow form.peerPassword "Password" %}
+    {% fieldrow form.peerEncryptionKey "Data Encryption Key" %}
+    {% fieldrow form.peerNotes "Notes" %}
+    {% fieldrow form.backupTime "Backup Start Time" %}
+    {% fieldrow form.backupDuration "Backup Session Duration" %}
+  </fieldset>
+  
+  <fieldset class="collapsible"><legend>Local Backup Peer Accounts</legend>
+  <div class="little-help">
+    These special accounts allow other smartboxes to backup their data to this smartbox
+    - a kind of peer-to-peer approach to remote backup.  Perhaps you will have a smartbox at home and one in the office.
+  </div>
+ 
+  <div class="backup-peers">
+    {% for peerAccount in peerAccounts %}
+      <div class="clear-left"><a class="inline" href="/backup-peer/{{peerAccount.1.username}}/">
+        <img class="inline" src="/media/images/sbremote.png"/> <span class="name">{{peerAccount.1.name}}</span><br/>({{peerAccount.1.username}})
+      </a></div>
+    {% endfor %}
+    
+    <div class="clear-left">
+    <a class="inline" href="/backup-peer" title="Add a new local backup peer account">
+      <img class="inline" src="/media/images/sbremote.png"/><span class="name">[Add new peer account]</span>
+    </a>
+    </div>
+  </div>
+  </fieldset>
+
+  <fieldset class="collapsible"><legend>Backup Actions</legend>
+    {%comment%}
+    <input type="submit" name="restoreBackupData" value="Restore Data"/>
+    {%endcomment%}
+    <input type="submit" name="clearBackupData" value="Clear Backup Data"/>
+  </fieldset>
+
+</fieldset>
+
+<fieldset class="collapsible{% if not form.has_errors %} collapsed{% endif %}"><legend>System Status Messages</legend>
+  <input type="submit" name="resetStatusMessages" value="Reset Messages"/>
+</fieldset>
+
+
+<input name="save" type="submit" value="Save"/>
+</form>
+
+{% endblock %}

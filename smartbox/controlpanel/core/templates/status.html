@@ -1,0 +1,94 @@
+{% load tags %}
+{% load thirdpartytags %}
+<div class="block">
+<h1>Server Status</h1>
+
+<fieldset><legend>Storage Space</legend>
+{% progressBar diskPercent diskText 150 13 %}
+</fieldset>
+
+{% if raidStatus %}
+<fieldset><legend>Disk Mirroring</legend>
+<table class="raidstatus">
+<tr>
+<td><img src="/media/images/drive-{% ifequal raidStatus.status 'STATUS_DRIVE1_DOWN'%}fail{% else %}okay{% endifequal %}.png"</td>
+<td>
+{% ifequal raidStatus.status "STATUS_OKAY" %}<img title="Internal backup is functioning correctly" src="/media/images/happy.png"/>
+{% else %}{% ifequal raidStatus.status "STATUS_SYNCING" %}
+<img title="The new disk is being synchronised" src="/media/images/raid-sync.png"/>
+{% progressBar raidStatus.recoveryProgress "" 30 5 %}
+{% else %}<img title="A drive failure has occured and the drive must be replaced" src="/media/images/sad.png"/> {% endifequal %} {% endifequal %}
+</td>
+<td><img src="/media/images/drive-{% ifequal raidStatus.status 'STATUS_DRIVE2_DOWN'%}fail{% else %}okay{% endifequal %}.png"</td>
+</tr>
+</table>
+</fieldset>
+{% endif %}
+
+{% if remoteBackupStatus %}
+  <fieldset><legend>External Backup</legend>
+  
+  <table class="raidstatus">
+  <tr>
+    <td>
+      <img src="/media/images/sbremote.png"/>
+    </td>
+    <td>
+      {% expr remoteBackupStatus["DAYS_SINCE_LAST_BACKUP"] > 1 as thereWereNoRecentBackups %}
+      {% expr remoteBackupStatus["LAST_BACKUP_STATUS"] as lastBackupSuccessful %}
+      
+      {% if thereWereNoRecentBackups %}
+        
+        {% if thereWereNoRecentBackups %}
+          {% expr "Remote backup has not run for %s days" % (remoteBackupStatus["DAYS_SINCE_LAST_BACKUP"] in range(1,8) and remoteBackupStatus["DAYS_SINCE_LAST_BACKUP"] or "many") as backupMessage %}
+          <img title="{{backupMessage}}" src="/media/images/sad.png"/>
+          {% expr remoteBackupStatus["DAYS_SINCE_LAST_BACKUP"] in range(1,8) and "warnday%s.png" % remoteBackupStatus["DAYS_SINCE_LAST_BACKUP"] or "warnday-many.png" as daysImage %}
+          <img title="{{backupMessage}}" src="/media/images/{{daysImage}}"/>
+        {% else %}
+          <img title="The last backup failed" src="/media/images/sad.png"/>
+        {% endif %}
+      
+      {% else %}
+      
+        {% expr (100.0 * remoteBackupStatus["BACKED_UP_BYTES"]) / remoteBackupStatus["BACKUP_BYTES"] as remoteProgress %}
+        {% expr remoteProgress >= 99 as backupComplete %}
+        {% if backupComplete %}
+          <img title="Your smartbox is fully synchronised with the remote smartbox." src="/media/images/happy.png"/>
+        {% else %}
+          <img title="Your smartbox is synchronising with the other: full backup may take several days." src="/media/images/raid-sync.png"/>
+          {% if remoteProgress %}
+            {% progressBar remoteProgress "" 30 5 %}
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </td>
+    <td>
+      <img src="/media/images/sbremote.png"/>
+    </td>
+  </tr>
+  <tr>
+    <td colspan=3>
+    <div class="smalltext">
+    {{lastBackedUpAt}} 
+    </div>
+    </td>
+  </tr>
+  </table>
+
+  </fieldset>
+{% endif %}
+
+
+
+<fieldset><legend>Power</legend>
+<table class="icons">
+<tr>
+<td> <a href="/command/reboot" title="Reboot this smartbox"><img src="/media/images/reboot.png"/><br/>Reboot</a></td>
+<td> <a href="/command/shutdown" title="Shutdown this smartbox"><img src="/media/images/shutdown.png"/><br/>Shutdown</a></td>
+</tr>
+</table>
+</div>
+</fieldset>
+
+</div>
+

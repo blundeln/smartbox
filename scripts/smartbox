@@ -1,0 +1,308 @@
+#!/usr/bin/python
+# Copyright (C) 2006 Nick Blundell.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# The GNU GPL is contained in /usr/doc/copyright/GPL on a Debian
+# system and in the file COPYING in the Linux kernel source.
+# 
+# smartbox-script (smartbox-script.py)
+# ------------------------------------
+#
+# Description:
+#
+#
+# Author       : Nick Blundell
+# Organisation : www.nickblundell.org.uk
+# Version Info : $Id$
+#
+
+
+import optparse
+import os
+import sys
+import smartbox
+from smartbox import system, samba, interface, core, apt, sbdjango, sbwikidbase
+import smartbox.raid
+import smartbox.remotebackup
+import smartbox.monitor
+import smartbox.network
+
+from nbdebug import *
+
+SERVER_HOST = "localhost"
+SERVER_PORT = 8000
+
+commands = [
+  "INSTALL",
+  "UPGRADE",
+  "RAID_REPAIR",
+  "RAID_FAIL",
+  "BACKUP",
+  "RESTORE",
+  "MONITOR",
+  "START",
+  "STOP",
+  "RESTART",
+  "PASSWD",
+  "GEN_LOGON_SCRIPT",
+]
+
+usage = """
+  %prog [options] COMMAND arg1 arg2 ...
+
+commands:
+
+  install: installs the smartbox (e.g. %prog install)
+  restore: restores files previously backed up: usage: %prog restore fred@somehost.com /retore-folder --password=mypass --key=myencryptkey)
+  raid_repair: replace a failed raid with a new disk.
+"""
+
+# Setup command line options.
+argParser = optparse.OptionParser(usage=usage, version=smartbox.VERSION)
+argParser.add_option("-t", "--test-run", action="store_true", help="Test run", dest="testRun", default=False)
+argParser.add_option("-v", "--verbose", action="store_true", help="Print verbose information", dest="verbose", default=False)
+argParser.add_option("--password", action="store", help="Password", dest="password", default=None)
+argParser.add_option("--key", action="store", help="Encryption key", dest="encryptionKey", default=None)
+argParser.add_option("--folders", action="store", help="Folders to backup or restore", dest="folders", default=None)
+
+# Parse the command-line args.
+(options, args) = argParser.parse_args()
+
+# Set some useful global variables.
+smartbox.options.update(options.__dict__)
+smartbox.options.args = args
+
+# Disable dialog mode
+smartbox.options.usedialog = False
+
+# Prepare the system.
+apt.prepareSystem()
+
+
+# Install dialog.
+if not apt.isInstalled("dialog") :
+  # Install dialog
+  print "Installing interface tools."
+  import smartbox.nickdialog
+  smartbox.nickdialog.install()
+
+
+def INSTALL() :
+  
+  # Determine if this is an upgrade or a fresh install.
+  upgrade = os.path.exists(getStartupScriptPath())
+ 
+  smartbox.options.usedialog = not smartbox.options.verbose
+  interface.displayHeader(upgrade and "Upgrading Smartbox" or "Installing Smartbox.")
+  smartbox.core.install(upgrade=upgrade)
+  if upgrade :
+    interface.showMessage("""CONGRATULATIONS\n\nThe smartbox has now been upgraded.  Enjoy!""", height=12, width=50)
+  else :
+    interface.showMessage("""CONGRATULATIONS\n\nThe smartbox has now been installed and configured.  In a browser, log in to "http://%s/" with default user/password: Administrator/%s\n\nEnjoy!""" % (smartbox.network.getHostname(), smartbox.core.DEFAULT_ADMIN_PASS), height=12, width=50)
+  _updateStartupScript()
+
+  
+def UPGRADE() :
+  INSTALL()
+
+
+def GEN_LOGON_SCRIPT() :
+  samba.generateLogonScript()
+
+
+
+def PASSWD() : 
+  debugOutput("args %s" % args)
+
+  password = raw_input()
+
+  try :
+    system.updateUser(args[1], password=password)
+  except :
+    pass
+
+
+def RAID_REPAIR() :
+
+  debugOutput("Running RAID repair stuff.")
+  
+  raidStatus = smartbox.raid.getStatus()
+  
+  # Check if we are on raid.
+  if not raidStatus :
+    interface.showMessage("""Raid is not installed.""")
+    return
+  
+  # IF raid is okay, we don't need to repair it.
+  if raidStatus.status not in [smartbox.raid.STATUS_DRIVE1_DOWN, smartbox.raid.STATUS_DRIVE2_DOWN] :
+    interface.showMessage("""Raid does not need repairing: it is functioning correctly.""")
+    return
+
+  # Get the failed device.
+  failedDevice = raidStatus.failedDevices and raidStatus.failedDevices[0] or None
+  if failedDevice :
+    interface.showMessage("""You need to remove the failed device ('%s') from the raid array.""" % failedDevice)
+    answer = interface.prompt("""To repair, you need to remove the failed device ('%s') from the raid array.\nType 'yes' to remove and 'no' to cancel""" % failedDevice)
+    if answer.lower() != "yes" :
+      interface.showMessage("""Aborting repair process""")
+      return
+
+    # Make sure the device is properly failed.
+    smartbox.raid.failRaidDevice(failedDevice)
+    
+    # Remove the device
+    smartbox.raid.removeRaidDevice(failedDevice)
+      
+  # Now confirm there are no failed raid devices  
+  raidStatus = smartbox.raid.getStatus()
+  if raidStatus.failedDevices :
+    interface.abort("""The failed raid device was not successfully removed from the raid array.""")
+    return
+    
+  # Get a list of raid candidate.
+  candidateDevices = smartbox.raid.getRaidCandidateDevices()
+  interface.showMessage("""Candidate raid devices: %s""" % ", ".join(candidateDevices))
+  chosenDevice = interface.prompt("Enter the name of one of the candidate raid devices to repair raid")
+  if chosenDevice.lower() not in candidateDevices :
+    interface.abort("""No candidate was chosen to repair raid""")
+    return
+    
+  answer = interface.prompt("Do you wish to add device %s to the raid array, erasing all current data on the device (yes/no)" % chosenDevice)
+  if answer.lower() != "yes" :
+    interface.showMessage("""Aborting repair process""")
+    return
+
+  interface.showMessage("""Formatting and partioning %s.  Please wait...""" % chosenDevice)
+  system.formatDevice(chosenDevice)
+  interface.showMessage("""Adding and resynchronising raid with %s.  Please wait (this could take hours, so have a cuppa')...""" % chosenDevice)
+  smartbox.raid.addNewDisk(chosenDevice)
+  interface.showMessage("""The raid array has now been repaired and is now synchronising. Phew!""")
+
+
+def RAID_FAIL() :
+
+  debugOutput("Running RAID Fail.")
+  try :
+    smartbox.raid.failRaidDevice(args[1])
+  except :
+    pass
+
+
+def MONITOR() :
+  
+  smartbox.options.usedialog = False
+  debugOutput("Running monitoring stuff.")
+  try :
+    smartbox.monitor.monitor()
+  except Exception, e :
+    smartbox.monitor.addError("Monitoring failed: %s" % e)
+
+def BACKUP() :
+  
+  smartbox.options.usedialog = False
+  debugOutput("Running backup.")
+  try :
+    timeout=int(args[1])
+  except :
+    timeout = None 
+
+  folders = smartbox.options.folders and smartbox.options.folders.split(",") or None
+  
+  smartbox.remotebackup.backup(timeout=timeout, folders=smartbox.options.folders and smartbox.options.folders.split(",") or None)
+
+def RESTORE() :
+  
+  smartbox.options.usedialog = False
+  debugOutput("Running backup restore.")
+  password = smartbox.options.password
+  encryptionKey = smartbox.options.encryptionKey
+  folders = smartbox.options.folders and smartbox.options.folders.split(",") or None
+  username, hostname = args[1].split("@")
+  
+  smartbox.remotebackup.restore(restoreDir=args[2], hostname=hostname, folders=folders, username=username, password=password, encryptionKey=encryptionKey)
+
+#
+# Server commands.
+#
+
+def START() :
+ 
+  sbdjango.startServer("smartbox.controlpanel.settings", SERVER_HOST, SERVER_PORT)
+  
+  # In case a sync did not finish, updated grub.
+  smartbox.raid.updateGrub()
+  
+  # XXX: Start wikidbase
+  #sbwikidbase.start()
+  
+
+def STOP() :
+
+  #system.run("""pkill -f 'controlpanel/manage\.py runserver'""", exitOnFail=False)
+  sbdjango.stopServer(SERVER_HOST, SERVER_PORT)
+  #sbwikidbase.stop()
+
+
+def RESTART() :
+  import time
+  STOP()
+  time.sleep(3)
+  START()
+
+
+
+#
+# Main
+#
+
+def main() :
+
+  if smartbox.options.testRun :
+    interface.displayHeader("This is a test run: nothing will be changed.")
+
+  try :
+    command = args[0].upper()
+  except :
+    interface.abort("You must type a command: '%s'." % commands)
+
+  if command in commands :
+    exec("%s()" % command)
+  else :
+    interface.abort("Error: unknown command '%s'" % command)
+
+
+def getStartupScriptPath() :
+  scriptName = os.path.basename(__file__)
+  return "/etc/init.d/%s" % scriptName
+
+def _updateStartupScript() :
+  # Copy this script to etc and activate it.
+  scriptName = os.path.basename(__file__)
+  system.run("ln -s %s /etc/init.d/%s" % (__file__, scriptName), exitOnFail=False)
+  system.run("chmod +x /etc/init.d/%s" % scriptName)
+  system.run("update-rc.d %s defaults" % scriptName)
+  os.system("/etc/init.d/%s restart &> /dev/null" % scriptName)
+
+
+def exitFunction() :
+  interface.cleanup()
+
+# Set an exit function to handle clean up.
+sys.exitfunc = exitFunction
+
+if __name__ == "__main__" :
+  system.autoSudo()
+  main()

@@ -1,0 +1,21 @@
+{% extends "dialogbox.html" %}
+
+{% block title %}Message{% endblock %}
+
+{% block content %}
+{{message}}
+
+<form method="POST">
+
+{% for option in options %}
+  <input type="submit" name="{{option.1}}" value="{{option.0}}"/>
+{% endfor %}
+
+{% if next %}
+  <input type="hidden" name="next" value="{{ next }}" />
+{% endif %}
+
+</form>
+
+
+{% endblock %}

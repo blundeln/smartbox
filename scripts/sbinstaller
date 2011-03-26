@@ -1,0 +1,10 @@
+sudo wget http://www.nickblundell.org.uk/packages/ez_setup.py
+sudo python ez_setup.py
+sudo easy_install --upgrade -f http://www.nickblundell.org.uk/packages smartbox
+if [ -e "/usr/bin/smartbox" ] ; then
+	echo "Installing smartbox"
+	sudo smartbox install
+else
+	echo "Upgrading smartbox"
+	sudo smartbox upgrade
+fi

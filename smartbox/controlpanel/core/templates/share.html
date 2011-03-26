@@ -1,0 +1,22 @@
+{% extends "main.html" %}
+{% load tags %}
+
+{% block title %}Network File-share Settings{% endblock %}
+
+{% block content %}
+<h1>Network File-share Settings{% if share %}: {{share.name}}{% endif %}</h1>
+
+{% if form.has_errors %}
+<h2>Please correct the following error{{ form.error_dict|pluralize }}:</h2>
+{% endif %}
+
+<form class="styled" method="POST">
+{% fieldrow form.shareName "Share Name" 0 %}
+{% fieldrow form.description "Description" %}
+{% fieldrow form.publicAccess "Public Share" %}
+
+<input name="save" type="submit" value="Save"/>
+<input name="delete" type="submit" value="Delete"/>
+</form>
+
+{% endblock %}

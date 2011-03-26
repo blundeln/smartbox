@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+{% load tags %}
+
+{% block title %}Network User Settings{% endblock %}
+
+{% block content %}
+
+<h1>Network User Settings</h1>
+
+{% if form.has_errors %}
+<h2>Please correct the following error{{ form.error_dict|pluralize }}:</h2>
+{% endif %}
+
+<form class="styled" method="POST">
+{% fieldrow form.username "Username" %}
+{% fieldrow form.name "Full name" %}
+{% fieldrow form.password1 "New password" %}
+{% fieldrow form.password2 "Re-type new password" %}
+
+<input name="save" type="submit" value="Save"/>
+<input name="delete" type="submit" value="Delete"/>
+</form>
+
+{% endblock %}

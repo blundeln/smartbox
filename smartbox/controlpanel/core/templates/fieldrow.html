@@ -1,0 +1,12 @@
+{% if visible %}
+<p>
+<label for="{{field.get_id}}">{{label}}:</label>
+{% endif %}
+{{field}}
+{% if visible %}
+{% if field.errors %}<div class="form-error">{{ field.errors|join:", " }}</div>{% endif %}
+{% if fieldNote %}
+<div class="little-help">{{fieldNote}}</div>
+{% endif %}
+</p>
+{% endif %}

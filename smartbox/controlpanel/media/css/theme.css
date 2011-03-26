@@ -1,0 +1,157 @@
+/*
+ * theme (theme.css)
+ * -----------------
+ *
+ * Description:
+ *	Theme
+ *
+ * Author       : Nick Blundell
+ * Organisation : www.nickblundell.org.uk
+ * Version Info : $Id$
+ */
+
+.clear:after {
+content: "."; 
+display: block; 
+height: 0; 
+clear: both; 
+visibility: hidden;
+}
+
+.clear {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .clear {height: 1%;}
+.clear {display: block;}
+/* End hide from IE-mac */
+
+
+div.pageskin1 { background: transparent none repeat-x top; }
+div.pageskin2 { background: transparent none repeat-y right; }
+div.pageskin3 { background: transparent none repeat-x bottom; }
+div.pageskin4 { background: transparent none repeat-y left; }
+div.pageskin5 { background: transparent none no-repeat top left; }
+div.pageskin6 { background: transparent none no-repeat top right; }
+div.pageskin7 { background: transparent none no-repeat bottom right; }
+div.pageskin8 { background: transparent none no-repeat bottom left; }
+
+div.pageskin1 {background-image: url(images/smartboxpage-ts.png); background-color:#ffffff;}
+div.pageskin2 {background-image: url(images/smartboxpage-rs.png);}
+div.pageskin3 {background-image: url(images/smartboxpage-bs.png);}
+div.pageskin4 {background-image: url(images/smartboxpage-ls.png);}
+div.pageskin5 {background-image: url(images/smartboxpage-tl.png);}
+div.pageskin6 {background-image: url(images/smartboxpage-tr.png);}
+div.pageskin7 {background-image: url(images/smartboxpage-br.png);}
+div.pageskin8 {background-image: url(images/smartboxpage-bl.png);}
+
+div.contentskin1 { background: transparent none repeat-x top; }
+div.contentskin2 { background: transparent none repeat-y right; }
+div.contentskin3 { background: transparent none repeat-x bottom; }
+div.contentskin4 { background: transparent none repeat-y left; }
+div.contentskin5 { background: transparent none no-repeat top left; }
+div.contentskin6 { background: transparent none no-repeat top right; }
+div.contentskin7 { background: transparent none no-repeat bottom right; }
+div.contentskin8 { background: transparent none no-repeat bottom left; }
+
+div.boxskin1 { background: transparent none repeat-x top; }
+div.boxskin2 { background: transparent none repeat-y right; }
+div.boxskin3 { background: transparent none repeat-x bottom; }
+div.boxskin4 { background: transparent none repeat-y left; }
+div.boxskin5 { background: transparent none no-repeat top left; }
+div.boxskin6 { background: transparent none no-repeat top right; }
+div.boxskin7 { background: transparent none no-repeat bottom right; }
+div.boxskin8 { background: transparent none no-repeat bottom left; }
+
+div.boxskin1 {background-image: url(images/smartboxbox-ts.png); margin-bottom:10px;}
+div.boxskin2 {background-image: url(images/smartboxbox-rs.png);}
+div.boxskin3 {background-image: url(images/smartboxbox-bs.png);}
+div.boxskin4 {background-image: url(images/smartboxbox-ls.png);}
+div.boxskin5 {background-image: url(images/smartboxbox-tl.png);}
+div.boxskin6 {background-image: url(images/smartboxbox-tr.png);}
+div.boxskin7 {background-image: url(images/smartboxbox-br.png);}
+div.boxskin8 {background-image: url(images/smartboxbox-bl.png); padding:5px 15px 15px 15px;}
+
+div.msgboxskin1 { background: transparent none repeat-x top; }
+div.msgboxskin2 { background: transparent none repeat-y right; }
+div.msgboxskin3 { background: transparent none repeat-x bottom; }
+div.msgboxskin4 { background: transparent none repeat-y left; }
+div.msgboxskin5 { background: transparent none no-repeat top left; }
+div.msgboxskin6 { background: transparent none no-repeat top right; }
+div.msgboxskin7 { background: transparent none no-repeat bottom right; }
+div.msgboxskin8 { background: transparent none no-repeat bottom left; }
+
+div.msgboxskin1 {background-image: url(images/sbdialog-ts.png); width:450px; margin:100px auto 0 auto;}
+div.msgboxskin2 {background-image: url(images/sbdialog-rs.png);}
+div.msgboxskin3 {background-image: url(images/sbdialog-bs.png);}
+div.msgboxskin4 {background-image: url(images/sbdialog-ls.png);}
+div.msgboxskin5 {background-image: url(images/sbdialog-tl.png);}
+div.msgboxskin6 {background-image: url(images/sbdialog-tr.png);}
+div.msgboxskin7 {background-image: url(images/sbdialog-br.png);}
+div.msgboxskin8 {background-image: url(images/sbdialog-bl.png); padding:140px 20px 40px 20px;}
+
+
+ul.message {
+	list-style-type: none;
+	background-color: #fff125;
+	border: 1px solid #646464;
+	padding: 3px;
+}
+
+.warnflash, .warning {
+	background-color: #ffff8b;
+	border: 1px solid black;
+	padding: 3px;
+  margin-top:3px;
+  font-size:1.4em;
+  font-weight:bold;
+}
+
+.warning img {float:left;margin-right:5px;}
+
+div.system-message {
+	background-color: lightgreen;
+	border: 1px solid black;
+	padding: 2px;
+}
+
+
+xul#tabnav {
+font: bold 11px verdana, arial, sans-serif;
+list-style-type: none;
+padding-bottom: 24px;
+border-bottom: 1px solid #6c6;
+margin: 0;
+}
+
+
+xul#tabnav li {
+float: left;
+height: 21px;
+background-color: #cfc;
+margin: 2px 2px 0 2px;
+border: 1px solid #6c6;
+}
+
+xul#tabnav li.active {
+border-bottom: 1px solid #fff;
+background-color: #fff;
+}
+
+
+#tabnav a {
+float: left;
+display: block;
+color: #666;
+text-decoration: none;
+padding: 4px;
+}
+
+#tabnav a:hover {
+background: #fff;
+}
+
+label {width:100px;xbackground-color:blue;display:block;float:left;margin:0 0 0 0; padding:0 0 0 0;}
+.formrow {margin:0 0 3px 0;}
+
+
+td.row-options a {float:left; margin-right:2px;}

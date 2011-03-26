@@ -1,0 +1,119 @@
+#!/usr/bin/python
+# Copyright (C) 2008 Nick Blundell.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# The GNU GPL is contained in /usr/doc/copyright/GPL on a Debian
+# system and in the file COPYING in the Linux kernel source.
+# 
+# smartbox-desktop (smartbox-desktop)
+# -----------------------------------
+#
+# Description:
+#
+#
+# Author       : Nick Blundell
+# Organisation : www.nickblundell.org.uk
+# Version Info : $Id$
+#
+
+# TODO
+#  Mount the user to smartbox shares over ssh
+#  Files written to the shares must be group rwx
+
+# Setup
+  # Create cert trust
+  # Add user to fuse group
+
+
+
+import os, optparse
+
+options, args = None, None
+
+
+def run(command) :
+  print command
+  if not options.test :
+    os.system(command)
+
+def setup() :
+
+  server = args[0]
+  home = os.path.expanduser('~')
+  rsaPub = os.path.join(home, ".ssh/id_rsa.pub")
+  user = os.getlogin()
+
+  if not os.path.exists(rsaPub) :
+    run("ssh-keygen -t rsa")
+
+  # Create certificate trust
+  print "Creating trust relationship to server.  Accept all defaults to the questions."
+  run("ssh-copy-id -i '%s' %s" % (rsaPub, server))
+  
+  # Add user to fuse group
+  print "Adding user to fuse group - you will need to enter password for sudo"
+  run("sudo adduser '%s' '%s'" % (user, "fuse"))
+  print "Added user to fuse group - you may need to re-login."
+
+
+def mount() :
+  server = args[0]
+  mountpoint = args[1]
+  if not os.path.exists(mountpoint) :
+    run("mkdir '%s'" % mountpoint)
+  run("sshfs '%s' '%s' -C" % (server, mountpoint))
+
+def unmount() :
+  mountpoint = args[0]
+  run("fusermount -u '%s'" % (mountpoint))
+
+
+def main() :
+  if options.setUp : 
+    setup()
+  elif options.mount :
+    mount()
+  elif options.unmount :
+    unmount()
+
+usage = """
+
+To establish trust between the user and the server, run the following command:
+
+  smartbox-desktop --set-up username@server
+
+To mount and unmount a folder on the server run:
+
+  smartbox-desktop --mount server:/share <mountpoint>
+  smartbox-desktop --unmount <mountpoint>
+
+EXAMPLES
+--------
+
+smartbox-desktop --mount mysmartbox:/shares ~/Desktop/shares
+"""
+
+if __name__ == "__main__" :
+
+  # Set-up and parse command line options.
+  argParser = optparse.OptionParser(usage=usage)
+  argParser.add_option("--set-up", action="store_true", help="", dest="setUp", default=False)
+  argParser.add_option("--mount", action="store_true", help="", dest="mount", default=False)
+  argParser.add_option("--unmount", action="store_true", help="", dest="unmount", default=False)
+  argParser.add_option("--test", action="store_true", help="", dest="test", default=False)
+  (options, args) = argParser.parse_args()
+  
+  main()

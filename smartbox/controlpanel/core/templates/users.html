@@ -1,0 +1,46 @@
+{% extends "main.html" %}
+{% load tags %}
+
+
+{% block content %}
+<form method="POST">
+<table id="users">
+<tr>
+<th><h1>Users</h1></th>
+<th colspan="50"><h1>File shares</h1></th>
+
+<tr><td/>
+{% for share in shares %}
+  <td><div class="shareheader"><a href="/share/{{share.name}}/" title="{{share.comment}}"><div>
+  {% if share.public %}
+    <img src="/media/images/share-public.png"/>
+  {% else %}  
+    <img src="/media/images/share.png"/>
+  {% endif %}
+  </div><div>{{share.name}}</div></a></div></td>
+{% endfor %}
+<td><div class="shareheader"><a href="/share/" title="Add a new file share to your network"><div><img src="/media/images/shareadd.png"/></div><div>[Add share]</div></a></div></td>
+</tr>
+
+{% for user in users %}
+<tr>
+<td class="user">
+<div><a href="/user/{{user.username}}/"><img src="/media/images/blankuser.png"/></div><div><span class="name">{{user.name}}</span><br/>({{user.username}})</a></div>
+</td>
+{% for share in shares %}
+<td><div class="sharecheckbox">{% permissionField form user share %}</div></td>
+{% endfor %}
+</tr>
+{% endfor %}
+
+<tr>
+<td class="user">
+<div><a href="/user" title="Add a new user to your network"><img src="/media/images/useradd.png"/></div><div><span class="name">[Add user]</span></a></div>
+</td>
+</tr>
+
+</tr>
+</table>
+<input name="save" type="submit" value="Save Permissions"/>
+</form>
+{% endblock %}
